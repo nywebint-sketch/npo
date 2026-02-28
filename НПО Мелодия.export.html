@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>НПО Мелодия</title>
+  <meta name="description" content="НПО Мелодия — клуб / лейбл / трансляции. Афиша, артисты, релизы, подкасты, live, мерч, контакты.">
+
+  <style>
+    :root{
+      --bg:#000;
+      --fg:#fff;
+      --muted:rgba(255,255,255,.72);
+      --stroke:rgba(255,255,255,.14);
+      --stroke2:rgba(255,255,255,.10);
+      --card:rgba(255,255,255,.04);
+      --radius:18px;
+      --max:1180px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+      background:var(--bg);
+      color:var(--fg);
+      line-height:1.35;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--max); margin:0 auto; padding:0 18px}
+
+    .topbar{
+      position:fixed; inset:0 0 auto 0; z-index:50;
+      height:68px;
+      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,.65);
+      border-bottom:1px solid var(--stroke2);
+    }
+    .topbar .in{
+      height:68px; display:flex; align-items:center; justify-content:space-between; gap:14px;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.3px}
+    .brand-mark{
+      width:34px; height:34px; border-radius:12px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.02);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .nav{display:flex; gap:12px; align-items:center; overflow:auto}
+    .nav a{
+      color:var(--muted);
+      font-size:14px;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+    .nav a:hover{color:var(--fg); background:rgba(255,255,255,.04); border-color:var(--stroke2)}
+    .nav a.active{color:var(--fg); background:rgba(255,255,255,.08); border-color:var(--stroke)}
+    .right{display:flex; gap:10px; align-items:center}
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color:var(--fg);
+      font-size:14px;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.18)}
+    .btn.primary{background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.24)}
+    .btn.ghost{background:transparent}
+
+    main{padding-top:68px}
+    section{padding:56px 0; border-bottom:1px solid var(--stroke2)}
+    .head{display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-bottom:18px}
+    h1,h2{margin:0}
+    h1{font-size: clamp(34px, 4.4vw, 64px); line-height:1.03; letter-spacing:.4px}
+    h2{font-size:22px; letter-spacing:.2px}
+    .sub{margin-top:10px; color:var(--muted); max-width:760px}
+
+    .grid{display:grid; gap:14px}
+    .g2{grid-template-columns: repeat(2, minmax(0,1fr))}
+    .g3{grid-template-columns: repeat(3, minmax(0,1fr))}
+    .g4{grid-template-columns: repeat(4, minmax(0,1fr))}
+
+    .card{
+      border:1px solid var(--stroke2);
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow:hidden;
+    }
+    .pad{padding:16px}
+    .divider{height:1px; background:var(--stroke2); margin:14px 0}
+    .muted{color:var(--muted)}
+    .tag{
+      display:inline-flex; align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.03);
+      font-size:12px;
+      color:rgba(255,255,255,.82);
+      white-space:nowrap;
+    }
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .sp{justify-content:space-between}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    /* Hero */
+    .hero{padding:58px 0 36px}
+    .heroGrid{
+      display:grid; gap:16px;
+      grid-template-columns: 1.1fr .9fr;
+      align-items:stretch;
+    }
+    .heroArt{
+      min-height:420px;
+      display:flex; flex-direction:column; justify-content:space-between;
+      position:relative;
+      border:1px solid var(--stroke2);
+      border-radius: var(--radius);
+      overflow:hidden;
+      background:#000;
+    }
+    .heroArt .bg{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.08), transparent 45%),
+        radial-gradient(circle at 70% 80%, rgba(255,255,255,.06), transparent 50%);
+      pointer-events:none;
+    }
+    .heroArt .smile{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      padding:20px;
+    }
+    .heroArt img{
+      width:min(520px, 90%);
+      height:auto;
+    }
+    .heroArt .cap{
+      position:relative;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 16px;
+      border-top:1px solid var(--stroke2);
+      background:rgba(0,0,0,.55);
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .hero-fullscreen .hero{padding:0}
+    .hero-fullscreen .hero .container{max-width:none; padding:0}
+    .hero-fullscreen .heroGrid{display:block}
+    .hero-fullscreen .heroGrid > div:first-child{display:none}
+    .hero-fullscreen .heroArt{
+      min-height:calc(100vh - 68px);
+      border:0;
+      border-radius:0;
+    }
+    .hero-fullscreen .heroArt .bg,
+    .hero-fullscreen .heroArt .cap{display:none}
+    .hero-fullscreen .heroArt .smile{padding:0}
+    .hero-fullscreen .heroArt img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    /* Media blocks (везде одно изображение) */
+    .media{
+      width:100%;
+      aspect-ratio: 4/5;
+      border-bottom:1px solid var(--stroke2);
+      background:#000;
+      display:flex; align-items:center; justify-content:center;
+      padding:12px;
+    }
+    .media.square{aspect-ratio:1/1}
+    .media.wide{aspect-ratio:16/9}
+    .media img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      opacity:.98;
+    }
+
+    /* Calendar */
+    .calHead{
+      display:grid; grid-template-columns: repeat(7, minmax(0,1fr));
+      gap:8px; color:rgba(255,255,255,.72); font-size:12px;
+      text-transform:uppercase; letter-spacing:.08em
+    }
+    .calGrid{display:grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap:8px; margin-top:10px}
+    .day{
+      min-height:88px;
+      border:1px solid var(--stroke2);
+      border-radius:14px;
+      background:rgba(255,255,255,.02);
+      padding:10px;
+      cursor:pointer;
+      transition: transform .08s ease, background .08s ease, border-color .08s ease;
+    }
+    .day:hover{transform:translateY(-1px); background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.16)}
+    .day.disabled{opacity:.35; cursor:default}
+    .day.disabled:hover{transform:none}
+    .dayNum{font-size:13px; color:rgba(255,255,255,.86)}
+    .dots{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px}
+    .dot{width:8px; height:8px; border-radius:999px; background:rgba(255,255,255,.70)}
+
+    /* Forms */
+    .input, textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.03);
+      color:var(--fg);
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+
+    footer{padding:24px 0 40px; color:var(--muted); font-size:14px}
+
+    @media (max-width: 1200px){
+      .container{padding:0 16px}
+      .g4{grid-template-columns:repeat(3, minmax(0,1fr))}
+    }
+
+    @media (max-width: 980px){
+      .nav{display:none}
+      .heroGrid{grid-template-columns:1fr}
+      .g4{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .g3{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .g2{grid-template-columns:1fr}
+      section{padding:44px 0}
+      .day{min-height:80px}
+    }
+
+    @media (max-width: 760px){
+      .topbar,
+      .topbar .in{height:60px}
+      main{padding-top:60px}
+      .right .btn{padding:9px 12px; font-size:13px}
+      h1{font-size:clamp(30px, 9vw, 48px)}
+      h2{font-size:20px}
+      .hero-fullscreen .heroArt{min-height:calc(100vh - 60px)}
+    }
+
+    @media (max-width: 520px){
+      .container{padding:0 14px}
+      .g4{grid-template-columns:1fr}
+      .g3{grid-template-columns:1fr}
+      .heroArt{min-height:360px}
+      .hero-fullscreen .hero .container{padding:0}
+      .right .btn:first-child{display:none}
+      .calHead{font-size:11px}
+      .calGrid{gap:6px}
+      .day{min-height:72px; padding:8px}
+      .pill{font-size:12px}
+    }
+
+    @media (max-width: 380px){
+      .brand{gap:8px}
+      .brand span:last-child{font-size:14px}
+      .btn{padding:8px 11px; font-size:13px}
+      .tag{padding:5px 8px}
+    }
+
+    @media (max-height: 700px){
+      section{padding:34px 0}
+      .hero-fullscreen .heroArt{min-height:calc(100vh - 60px)}
+    }
+  </style>
+</head>
+
+<body class="hero-fullscreen">
+<header class="topbar">
+  <div class="container">
+    <div class="in">
+      <a class="brand" href="#home">
+        <span class="brand-mark" aria-hidden="true">◎</span>
+        <span>НПО Мелодия</span>
+      </a>
+
+      <nav class="nav" aria-label="Навигация">
+        <a href="#events">Ивенты</a>
+        <a href="#calendar">Календарь</a>
+        <a href="#artists">Артисты</a>
+        <a href="#releases">Релизы</a>
+        <a href="#streams">Трансляции</a>
+        <a href="#merch">Мерч</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+
+      <div class="right">
+        <a class="btn" href="#events">Афиша</a>
+        <a class="btn primary" href="#streams">Live</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="container">
+      <div class="heroGrid">
+        <div>
+          <h1 style="margin-top:12px;">НПО Мелодия</h1>
+          <div class="row" style="margin-top:56px;">
+            <a class="btn primary" href="#events">Афиша</a>
+            <a class="btn" href="#calendar">Календарь</a>
+            <a class="btn ghost" href="#artists">Артисты</a>
+            <a class="btn ghost" href="#artists">Мерч</a>
+          </div>
+          <div class="row" style="margin-top:14px;">
+            <span class="pill" id="nextEventPill">Следующий ивент: Warehouse Night · 07.03.2026 23:00</span>
+            <span class="pill">место: Paris / test</span>
+          </div>
+        </div>
+
+        <div class="heroArt">
+          <div class="bg"></div>
+          <div class="smile">
+            <img src="smile.png" alt="Изображение">
+          </div>
+          <div class="cap">
+            <span>SMILE SERIES 01</span>
+            <span>white line / black</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="events">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>АФИША</h2>
+        </div>
+        <div class="row">
+        </div>
+      </div>
+
+      <div class="grid g4" id="eventsGrid"><div class="card">
+        <div class="media"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Warehouse Night</b>
+            <span class="tag">tickets</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">07.03.2026 23:00 · НПО Мелодия</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">techno</span><span class="tag">resident</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="event" data-id="e1" type="button">Подробнее</button>
+        </div>
+      </div><div class="card">
+        <div class="media"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Podcast Session (Video)</b>
+            <span class="tag">free</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">12.03.2026 20:00 · Студия НПО</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">podcast</span><span class="tag">talk</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="event" data-id="e2" type="button">Подробнее</button>
+        </div>
+      </div><div class="card">
+        <div class="media"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Open Decks / Community</b>
+            <span class="tag">registration</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">21.03.2026 19:00 · НПО Мелодия</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">community</span><span class="tag">house</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="event" data-id="e3" type="button">Подробнее</button>
+        </div>
+      </div><div class="card">
+        <div class="media"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Label Showcase</b>
+            <span class="tag">tickets</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">29.03.2026 22:30 · НПО Мелодия</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">label</span><span class="tag">industrial</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="event" data-id="e4" type="button">Подробнее</button>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section id="calendar">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>Календарь</h2>
+          <div class="sub">Месячная сетка (клик по дню выводит события справа).</div>
+        </div>
+        <div class="row">
+          <button class="btn" id="prevMonth" type="button">←</button>
+          <span class="pill" id="monthLabel">Февраль 2026</span>
+          <button class="btn" id="nextMonth" type="button">→</button>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card pad">
+          <div class="calHead" id="calHead"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+          <div class="calGrid" id="calGrid"><div class="day disabled"></div><div class="day disabled"></div><div class="day disabled"></div><div class="day disabled"></div><div class="day disabled"></div><div class="day disabled"></div><div class="day" data-key="2026-02-01">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">1</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-02">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">2</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-03">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">3</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-04">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">4</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-05">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">5</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-06">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">6</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-07">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">7</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-08">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">8</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-09">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">9</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-10">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">10</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-11">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">11</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-12">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">12</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-13">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">13</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-14">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">14</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-15">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">15</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-16">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">16</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-17">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">17</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-18">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">18</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-19">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">19</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-20">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">20</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-21">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">21</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-22">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">22</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-23">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">23</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-24">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">24</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-25">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">25</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-26">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">26</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-27">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">27</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div><div class="day" data-key="2026-02-28">
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">28</div>
+          
+        </div>
+        <div class="dots"></div>
+      </div></div>
+        </div>
+
+        <div class="card pad">
+          <div class="row sp">
+            <div>
+              <b id="pickedDayLabel">Выбери день</b>
+              <div class="muted" id="pickedDayHint" style="margin-top:6px;">События появятся здесь</div>
+            </div>
+            <button class="btn" id="clearPicked" type="button">Сброс</button>
+          </div>
+          <div class="divider"></div>
+          <div class="grid" id="pickedEvents"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARTISTS -->
+  <section id="artists">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>Артисты &amp; букинг</h2>
+          <div class="sub">тестовый каталог</div>
+        </div>
+        <div class="row">
+          <input class="input" id="artistSearch" placeholder="Поиск артиста…" style="width:min(320px, 70vw);">
+          <a class="btn primary" href="#booking">Запросить букинг</a>
+        </div>
+      </div>
+
+      <div class="grid g3" id="artistsGrid"><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>GUEST A</b>
+            <span class="tag">booking</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">Selector</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">breaks</span><span class="tag">leftfield</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="a5" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>HOST</b>
+            <span class="tag">booking</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">Podcast host</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">talk</span><span class="tag">curation</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="a6" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>KIRA</b>
+            <span class="tag">booking</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">DJ / resident</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">techno</span><span class="tag">peak</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="a1" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>NPO LIVE</b>
+            <span class="tag">booking</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">Live act</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">live</span><span class="tag">hardware</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="a2" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>YUDIN</b>
+            <span class="tag">off</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">DJ</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">house</span><span class="tag">warmup</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="a3" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>ZED</b>
+            <span class="tag">booking</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">DJ / guest</div>
+          <div class="row" style="margin-top:10px;">
+            <span class="tag">industrial</span><span class="tag">fast</span>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="a4" type="button">Открыть</button>
+        </div>
+      </div></div>
+
+      <div style="height:22px"></div>
+
+      <div class="card pad" id="booking">
+        <div class="row sp">
+          <div>
+            <h2 style="font-size:18px; margin:0;">Букинг</h2>
+            <div class="sub" style="margin-top:8px;">Форма-заглушка. Генерит текст запроса.</div>
+          </div>
+          <button class="btn" id="copyBooking" type="button">Скопировать</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="grid g2">
+          <div class="grid" style="gap:10px;">
+            <input class="input" id="bDate" placeholder="Дата (например 14.03.2026)">
+            <input class="input" id="bCity" placeholder="Город">
+            <input class="input" id="bVenue" placeholder="Площадка / клуб">
+            <input class="input" id="bFormat" placeholder="Формат (DJ / live / hybrid)">
+            <input class="input" id="bContacts" placeholder="Контакты (telegram/email)">
+            <button class="btn primary" id="genBooking" type="button">Сгенерировать</button>
+          </div>
+          <div>
+            <textarea id="bookingText" placeholder="Нажми «Сгенерировать»"></textarea>
+            <div class="muted" style="margin-top:10px; font-size:13px;">
+              Это MVP: дальше можно отправлять в TG-бота/почту.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RELEASES -->
+  <section id="releases">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>Релизы &amp; подкасты</h2>
+          <div class="sub">Тестовые релизы и подкасты. Визуал заменен на твою картинку.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pad">
+          <b>Релизы</b>
+          <div class="muted" style="margin-top:6px;">Сетка 4 в ряд на desktop.</div>
+        </div>
+        <div class="divider" style="margin:0;"></div>
+        <div class="pad">
+          <div class="grid g4" id="releasesGrid"><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b style="max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">YUDIN - Warmup Notes</b>
+            <span class="tag">digital</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">2026-03-29</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="release" data-id="r4" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b style="max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">NPO LIVE - Session Cuts</b>
+            <span class="tag">digital</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">2026-03-22</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="release" data-id="r3" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b style="max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">KIRA - Night Tools EP</b>
+            <span class="tag">vinyl</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">2026-03-15</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="release" data-id="r2" type="button">Открыть</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b style="max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">NPO VA 001</b>
+            <span class="tag">digital</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">2026-02-28</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="release" data-id="r1" type="button">Открыть</button>
+        </div>
+      </div></div>
+        </div>
+      </div>
+
+      <div style="height:14px"></div>
+
+      <div class="card">
+        <div class="pad">
+          <b>Подкасты</b>
+          <div class="muted" style="margin-top:6px;">Плеер-заглушка. Потом сюда вставится SoundCloud.</div>
+        </div>
+        <div class="divider" style="margin:0;"></div>
+        <div class="pad">
+          <div class="grid g2" id="podcastsGrid"><div class="card">
+        <div class="pad">
+          <div class="row sp">
+            <b>NPO Podcast 02: KIRA</b>
+            <span class="tag">2026-03-05</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">Сет + треклист.</div>
+        </div>
+        <div class="divider" style="margin:0;"></div>
+        <div class="pad">
+          <div class="media wide"><img src="smile.png" alt=""></div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="podcast" data-id="p2" type="button">Открыть страницу</button>
+        </div>
+      </div><div class="card">
+        <div class="pad">
+          <div class="row sp">
+            <b>NPO Podcast 01: GUEST A</b>
+            <span class="tag">2026-02-18</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">Разговор + сет.</div>
+        </div>
+        <div class="divider" style="margin:0;"></div>
+        <div class="pad">
+          <div class="media wide"><img src="smile.png" alt=""></div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="podcast" data-id="p1" type="button">Открыть страницу</button>
+        </div>
+      </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STREAMS -->
+  <section id="streams">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>Трансляции</h2>
+          <div class="sub">Live + архив. Сейчас все тестово.</div>
+        </div>
+        <div class="row">
+          <span class="pill" id="streamNext">Следующий эфир: Warehouse Night · 07.03.2026 23:00</span>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <div class="pad">
+            <div class="row sp">
+              <b>Live</b>
+              <span class="tag">placeholder</span>
+            </div>
+          </div>
+          <div class="divider" style="margin:0;"></div>
+          <div class="pad">
+            <div class="media wide"><img src="smile.png" alt=""></div>
+          </div>
+        </div>
+
+        <div class="card pad">
+          <div class="row sp">
+            <b>Архив</b>
+            <span class="tag">3 записи</span>
+          </div>
+          <div class="divider"></div>
+          <div class="grid" id="streamsList"><div class="card pad">
+        <div class="row sp">
+          <b style="max-width:72%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Replay: Warehouse Night</b>
+          <span class="tag">2026-02-10</span>
+        </div>
+        <div style="height:10px"></div>
+        <button class="btn" data-open="stream" data-id="s1" type="button">Открыть</button>
+      </div><div class="card pad">
+        <div class="row sp">
+          <b style="max-width:72%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Replay: Guest Session</b>
+          <span class="tag">2026-02-03</span>
+        </div>
+        <div style="height:10px"></div>
+        <button class="btn" data-open="stream" data-id="s2" type="button">Открыть</button>
+      </div><div class="card pad">
+        <div class="row sp">
+          <b style="max-width:72%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Replay: Community Night</b>
+          <span class="tag">2026-01-27</span>
+        </div>
+        <div style="height:10px"></div>
+        <button class="btn" data-open="stream" data-id="s3" type="button">Открыть</button>
+      </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MERCH -->
+  <section id="merch">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>Мерч</h2>
+          <div class="sub">Каталог (тест). Кнопка ведет на модалку.</div>
+        </div>
+        <div class="row">
+          <span class="pill">оплата: позже</span>
+        </div>
+      </div>
+
+      <div class="grid g4" id="merchGrid"><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>T-shirt NPO</b>
+            <span class="tag">preorder</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">3500 ₽</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="merch" data-id="m1" type="button">Подробнее</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Cap NPO</b>
+            <span class="tag">in_stock</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">1900 ₽</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="merch" data-id="m2" type="button">Подробнее</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Sticker pack</b>
+            <span class="tag">in_stock</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">450 ₽</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="merch" data-id="m3" type="button">Подробнее</button>
+        </div>
+      </div><div class="card">
+        <div class="media square"><img src="smile.png" alt=""></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>Totebag</b>
+            <span class="tag">preorder</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">2400 ₽</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="merch" data-id="m4" type="button">Подробнее</button>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="contacts">
+    <div class="container">
+      <div class="head">
+        <div>
+          <h2>Контакты</h2>
+          <div class="sub">Тестовые контакты + карта-заглушка.</div>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card pad">
+          <b>НПО Мелодия</b>
+          <div class="divider"></div>
+          <div class="row"><span class="tag">Адрес</span><span class="muted">Paris, test street 12</span></div>
+          <div style="height:10px"></div>
+          <div class="row"><span class="tag">Букинг</span><span class="muted">booking@npo-melodiya.test</span></div>
+          <div style="height:10px"></div>
+          <div class="row"><span class="tag">Пресса</span><span class="muted">press@npo-melodiya.test</span></div>
+          <div class="divider"></div>
+          <div class="row">
+            <a class="btn" href="#" onclick="alert(&#39;Поставь ссылку&#39;); return false;">Telegram</a>
+            <a class="btn" href="#" onclick="alert(&#39;Поставь ссылку&#39;); return false;">Instagram</a>
+            <a class="btn" href="#" onclick="alert(&#39;Поставь ссылку&#39;); return false;">SoundCloud</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="pad">
+            <div class="row sp">
+              <b>Карта</b>
+              <span class="tag">placeholder</span>
+            </div>
+          </div>
+          <div class="divider" style="margin:0;"></div>
+          <div class="pad">
+            <div class="media wide"><img src="smile.png" alt=""></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">© <span id="year">2026</span> НПО Мелодия · тестовый прототип</div>
+  </footer>
+
+</main>
+
+<!-- MODAL -->
+<div id="modal" style="
+  position:fixed; inset:0; z-index:100; display:none;
+  align-items:center; justify-content:center; padding:18px;
+  background: rgba(0,0,0,.70); backdrop-filter: blur(8px);
+">
+  <div style="
+    width:min(920px, 100%); max-height:86vh; overflow:auto;
+    border-radius:20px; border:1px solid var(--stroke);
+    background:#060606;
+  ">
+    <div style="display:flex; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid var(--stroke2);">
+      <div>
+        <div id="mTitle" style="font-weight:800; letter-spacing:.2px;">—</div>
+        <div id="mSub" class="muted" style="margin-top:6px; font-size:13px;">—</div>
+      </div>
+      <button class="btn" id="mClose" type="button">Закрыть</button>
+    </div>
+    <div class="pad" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+  // IMPORTANT:
+  // 1) Сохрани твою картинку рядом с index.html
+  // 2) Назови файл smile.png (или поменяй все src="smile.png" на свое имя)
+
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const pad2 = n => String(n).padStart(2,"0");
+  const fmtDT = (iso) => {
+    const d = new Date(iso);
+    return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  };
+  const monthRU = m => ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"][m];
+  const weekRU = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  const sortAsc = (arr, key)=>[...arr].sort((a,b)=>new Date(a[key])-new Date(b[key]));
+
+  const data = {
+    events: [
+      { id:"e1", title:"Warehouse Night", date:"2026-03-07T23:00:00", place:"НПО Мелодия", tags:["techno","resident"], status:"tickets", about:"Ночь техно. Резиденты + лайв-блок.", lineup:["KIRA","NPO LIVE","YUDIN"] },
+      { id:"e2", title:"Podcast Session (Video)", date:"2026-03-12T20:00:00", place:"Студия НПО", tags:["podcast","talk"], status:"free", about:"Видео-подкаст: разговор + мини-сет.", lineup:["HOST","GUEST A"] },
+      { id:"e3", title:"Open Decks / Community", date:"2026-03-21T19:00:00", place:"НПО Мелодия", tags:["community","house"], status:"registration", about:"Открытые слоты. Комьюнити вечер.", lineup:["OPEN SLOTS"] },
+      { id:"e4", title:"Label Showcase", date:"2026-03-29T22:30:00", place:"НПО Мелодия", tags:["label","industrial"], status:"tickets", about:"Шоукейс лейбла.", lineup:["ZED","KIRA"] },
+    ],
+    artists: [
+      { id:"a1", name:"KIRA", role:"DJ / resident", bookable:true, tags:["techno","peak"], bio:"Резидент. Плотный техно-саунд." },
+      { id:"a2", name:"NPO LIVE", role:"Live act", bookable:true, tags:["live","hardware"], bio:"Живой сет с железом." },
+      { id:"a3", name:"YUDIN", role:"DJ", bookable:false, tags:["house","warmup"], bio:"Варм-ап, грув, длинные дуги." },
+      { id:"a4", name:"ZED", role:"DJ / guest", bookable:true, tags:["industrial","fast"], bio:"Индастриал/фаст." },
+      { id:"a5", name:"GUEST A", role:"Selector", bookable:true, tags:["breaks","leftfield"], bio:"Лефтфилд селекция." },
+      { id:"a6", name:"HOST", role:"Podcast host", bookable:true, tags:["talk","curation"], bio:"Ведущий подкаста." },
+    ],
+    releases: [
+      { id:"r1", title:"NPO VA 001", date:"2026-02-28", format:"digital", tracklist:["Track 1","Track 2","Track 3"] },
+      { id:"r2", title:"KIRA - Night Tools EP", date:"2026-03-15", format:"vinyl", tracklist:["A1","A2","B1","B2"] },
+      { id:"r3", title:"NPO LIVE - Session Cuts", date:"2026-03-22", format:"digital", tracklist:["Cut 1","Cut 2"] },
+      { id:"r4", title:"YUDIN - Warmup Notes", date:"2026-03-29", format:"digital", tracklist:["Note 1","Note 2","Note 3"] },
+    ],
+    podcasts: [
+      { id:"p1", title:"NPO Podcast 01: GUEST A", date:"2026-02-18", note:"Разговор + сет." },
+      { id:"p2", title:"NPO Podcast 02: KIRA", date:"2026-03-05", note:"Сет + треклист." },
+    ],
+    streams: [
+      { id:"s1", title:"Replay: Warehouse Night", date:"2026-02-10" },
+      { id:"s2", title:"Replay: Guest Session", date:"2026-02-03" },
+      { id:"s3", title:"Replay: Community Night", date:"2026-01-27" },
+    ],
+    merch: [
+      { id:"m1", title:"T-shirt NPO", price:"3500 ₽", status:"preorder", desc:"Плотный хлопок, белый принт." },
+      { id:"m2", title:"Cap NPO", price:"1900 ₽", status:"in_stock", desc:"Вышивка." },
+      { id:"m3", title:"Sticker pack", price:"450 ₽", status:"in_stock", desc:"Набор наклеек." },
+      { id:"m4", title:"Totebag", price:"2400 ₽", status:"preorder", desc:"Хлопок, трафарет." },
+    ]
+  };
+
+  let showUpcoming = true;
+
+  function renderEvents(){
+    const wrap = $("#eventsGrid");
+    wrap.innerHTML = "";
+    const now = new Date();
+    let list = sortAsc(data.events, "date");
+    if(showUpcoming) list = list.filter(e => new Date(e.date) >= now);
+
+    list.forEach((e)=>{
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="media"><img src="smile.png" alt="" /></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>${e.title}</b>
+            <span class="tag">${e.status}</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">${fmtDT(e.date)} · ${e.place}</div>
+          <div class="row" style="margin-top:10px;">
+            ${e.tags.map(t=>`<span class="tag">${t}</span>`).join("")}
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="event" data-id="${e.id}" type="button">Подробнее</button>
+        </div>
+      `;
+      wrap.appendChild(el);
+    });
+
+    const next = sortAsc(data.events, "date").filter(e=>new Date(e.date)>=now)[0];
+    $("#nextEventPill").textContent = next ? `Следующий ивент: ${next.title} · ${fmtDT(next.date)}` : "Следующий ивент: —";
+  }
+
+  const toggleUpcomingBtn = $("#toggleUpcoming");
+  if (toggleUpcomingBtn) {
+    toggleUpcomingBtn.addEventListener("click", ()=>{
+      showUpcoming = !showUpcoming;
+      toggleUpcomingBtn.textContent = `Показать: ${showUpcoming ? "ближайшие" : "все"}`;
+      renderEvents();
+    });
+  }
+
+  let viewY = new Date().getFullYear();
+  let viewM = new Date().getMonth();
+
+  function renderCal(){
+    $("#monthLabel").textContent = `${monthRU(viewM)} ${viewY}`;
+    $("#calHead").innerHTML = weekRU.map(w=>`<div>${w}</div>`).join("");
+
+    const grid = $("#calGrid");
+    grid.innerHTML = "";
+
+    const first = new Date(viewY, viewM, 1);
+    const last = new Date(viewY, viewM+1, 0);
+    const firstDow = (first.getDay()+6)%7;
+    const total = last.getDate();
+
+    const map = new Map();
+    data.events.forEach(e=>{
+      const d = new Date(e.date);
+      if(d.getFullYear()===viewY && d.getMonth()===viewM){
+        const key = `${viewY}-${pad2(viewM+1)}-${pad2(d.getDate())}`;
+        if(!map.has(key)) map.set(key, []);
+        map.get(key).push(e);
+      }
+    });
+
+    for(let i=0;i<firstDow;i++){
+      const b = document.createElement("div");
+      b.className = "day disabled";
+      grid.appendChild(b);
+    }
+
+    for(let day=1; day<=total; day++){
+      const key = `${viewY}-${pad2(viewM+1)}-${pad2(day)}`;
+      const list = map.get(key) || [];
+      const el = document.createElement("div");
+      el.className = "day";
+      el.dataset.key = key;
+      el.innerHTML = `
+        <div class="row sp" style="align-items:flex-start;">
+          <div class="dayNum">${day}</div>
+          ${list.length ? `<span class="tag">${list.length}</span>` : ``}
+        </div>
+        <div class="dots">${list.slice(0,8).map(()=>`<span class="dot"></span>`).join("")}</div>
+      `;
+      el.addEventListener("click", ()=>pickDay(key));
+      grid.appendChild(el);
+    }
+  }
+
+  function pickDay(key){
+    const [yy,mm,dd] = key.split("-").map(Number);
+    const d = new Date(yy, mm-1, dd);
+    $("#pickedDayLabel").textContent = `События: ${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;
+
+    const list = data.events
+      .filter(e=>{
+        const ed = new Date(e.date);
+        return ed.getFullYear()===yy && (ed.getMonth()+1)===mm && ed.getDate()===dd;
+      })
+      .sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+    const wrap = $("#pickedEvents");
+    wrap.innerHTML = "";
+
+    if(!list.length){
+      $("#pickedDayHint").textContent = "В этот день ивентов нет";
+      return;
+    }
+    $("#pickedDayHint").textContent = `${list.length} шт.`;
+
+    list.forEach((e)=>{
+      const c = document.createElement("div");
+      c.className = "card pad";
+      c.innerHTML = `
+        <div class="row sp">
+          <b>${e.title}</b>
+          <span class="tag">${e.status}</span>
+        </div>
+        <div class="muted" style="margin-top:6px;">${fmtDT(e.date)} · ${e.place}</div>
+        <div class="row" style="margin-top:10px;">
+          ${e.tags.map(t=>`<span class="tag">${t}</span>`).join("")}
+        </div>
+        <div style="height:12px"></div>
+        <button class="btn" data-open="event" data-id="${e.id}" type="button">Подробнее</button>
+      `;
+      wrap.appendChild(c);
+    });
+  }
+
+  function clearPicked(){
+    $("#pickedDayLabel").textContent = "Выбери день";
+    $("#pickedDayHint").textContent = "События появятся здесь";
+    $("#pickedEvents").innerHTML = "";
+  }
+
+  $("#prevMonth").addEventListener("click", ()=>{
+    viewM--; if(viewM<0){viewM=11; viewY--;}
+    renderCal(); clearPicked();
+  });
+  $("#nextMonth").addEventListener("click", ()=>{
+    viewM++; if(viewM>11){viewM=0; viewY++;}
+    renderCal(); clearPicked();
+  });
+  $("#clearPicked").addEventListener("click", clearPicked);
+
+  function renderArtists(){
+    const q = ($("#artistSearch").value||"").trim().toLowerCase();
+    const wrap = $("#artistsGrid");
+    wrap.innerHTML = "";
+
+    let list = [...data.artists].sort((a,b)=>a.name.localeCompare(b.name));
+    if(q){
+      list = list.filter(a =>
+        a.name.toLowerCase().includes(q) ||
+        a.role.toLowerCase().includes(q) ||
+        (a.tags||[]).join(" ").toLowerCase().includes(q)
+      );
+    }
+
+    list.forEach((a)=>{
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="media square"><img src="smile.png" alt="" /></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>${a.name}</b>
+            <span class="tag">${a.bookable ? "booking" : "off"}</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">${a.role}</div>
+          <div class="row" style="margin-top:10px;">
+            ${a.tags.map(t=>`<span class="tag">${t}</span>`).join("")}
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="artist" data-id="${a.id}" type="button">Открыть</button>
+        </div>
+      `;
+      wrap.appendChild(el);
+    });
+  }
+
+  $("#artistSearch").addEventListener("input", renderArtists);
+
+  function renderReleases(){
+    const wrap = $("#releasesGrid");
+    wrap.innerHTML = "";
+    [...data.releases].sort((a,b)=>b.date.localeCompare(a.date)).forEach((r)=>{
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="media square"><img src="smile.png" alt="" /></div>
+        <div class="pad">
+          <div class="row sp">
+            <b style="max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.title}</b>
+            <span class="tag">${r.format}</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">${r.date}</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="release" data-id="${r.id}" type="button">Открыть</button>
+        </div>
+      `;
+      wrap.appendChild(el);
+    });
+  }
+
+  function renderPodcasts(){
+    const wrap = $("#podcastsGrid");
+    wrap.innerHTML = "";
+    [...data.podcasts].sort((a,b)=>b.date.localeCompare(a.date)).forEach((p)=>{
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="pad">
+          <div class="row sp">
+            <b>${p.title}</b>
+            <span class="tag">${p.date}</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">${p.note}</div>
+        </div>
+        <div class="divider" style="margin:0;"></div>
+        <div class="pad">
+          <div class="media wide"><img src="smile.png" alt="" /></div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="podcast" data-id="${p.id}" type="button">Открыть страницу</button>
+        </div>
+      `;
+      wrap.appendChild(el);
+    });
+  }
+
+  function renderStreams(){
+    const wrap = $("#streamsList");
+    wrap.innerHTML = "";
+    data.streams.forEach((s)=>{
+      const row = document.createElement("div");
+      row.className = "card pad";
+      row.innerHTML = `
+        <div class="row sp">
+          <b style="max-width:72%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.title}</b>
+          <span class="tag">${s.date}</span>
+        </div>
+        <div style="height:10px"></div>
+        <button class="btn" data-open="stream" data-id="${s.id}" type="button">Открыть</button>
+      `;
+      wrap.appendChild(row);
+    });
+
+    const now = new Date();
+    const next = sortAsc(data.events,"date").filter(e=>new Date(e.date)>=now)[0];
+    $("#streamNext").textContent = next ? `Следующий эфир: ${next.title} · ${fmtDT(next.date)}` : "Следующий эфир: —";
+  }
+
+  function renderMerch(){
+    const wrap = $("#merchGrid");
+    wrap.innerHTML = "";
+    data.merch.forEach((m)=>{
+      const el = document.createElement("div");
+      el.className = "card";
+      el.innerHTML = `
+        <div class="media square"><img src="smile.png" alt="" /></div>
+        <div class="pad">
+          <div class="row sp">
+            <b>${m.title}</b>
+            <span class="tag">${m.status}</span>
+          </div>
+          <div class="muted" style="margin-top:6px;">${m.price}</div>
+          <div style="height:12px"></div>
+          <button class="btn" data-open="merch" data-id="${m.id}" type="button">Подробнее</button>
+        </div>
+      `;
+      wrap.appendChild(el);
+    });
+  }
+
+  // Modal
+  const modal = $("#modal");
+  const openModal = ({title, sub, body})=>{
+    $("#mTitle").textContent = title || "—";
+    $("#mSub").textContent = sub || "";
+    $("#mBody").innerHTML = body || "";
+    modal.style.display = "flex";
+  };
+  const closeModal = ()=>{ modal.style.display="none"; };
+  $("#mClose").addEventListener("click", closeModal);
+  modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
+
+  document.addEventListener("click", (e)=>{
+    const b = e.target.closest("[data-open]");
+    if(!b) return;
+    const type = b.dataset.open;
+    const id = b.dataset.id;
+
+    if(type==="event"){
+      const ev = data.events.find(x=>x.id===id);
+      openModal({
+        title: ev.title,
+        sub: `${fmtDT(ev.date)} · ${ev.place}`,
+        body: `
+          <div class="grid g2">
+            <div class="card">
+              <div class="media"><img src="smile.png" alt="" /></div>
+              <div class="pad">
+                <div class="row">${ev.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+                <div class="divider"></div>
+                <b>Описание</b>
+                <div class="muted" style="margin-top:8px;">${ev.about}</div>
+              </div>
+            </div>
+            <div class="card pad">
+              <b>Лайнап</b>
+              <div class="divider"></div>
+              <div class="muted">${(ev.lineup||[]).join("<br>")}</div>
+              <div class="divider"></div>
+              <div class="row sp">
+                <span class="tag">${ev.status}</span>
+                <button class="btn primary" type="button" onclick="alert('Тут будет ссылка на билеты/регистрацию')">Билеты / регистрация</button>
+              </div>
+            </div>
+          </div>
+        `
+      });
+      return;
+    }
+
+    if(type==="artist"){
+      const a = data.artists.find(x=>x.id===id);
+      openModal({
+        title: a.name,
+        sub: `${a.role} · ${a.bookable ? "доступен для букинга" : "не на букинге"}`,
+        body: `
+          <div class="grid g2">
+            <div class="card">
+              <div class="media square"><img src="smile.png" alt="" /></div>
+              <div class="pad">
+                <div class="row">${a.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+                <div class="divider"></div>
+                <b>Bio</b>
+                <div class="muted" style="margin-top:8px;">${a.bio}</div>
+              </div>
+            </div>
+            <div class="card pad">
+              <b>Букинг</b>
+              <div class="divider"></div>
+              <div class="muted">Перейди к форме и отправь запрос.</div>
+              <div style="height:12px"></div>
+              <a class="btn primary" href="#booking" onclick="document.getElementById('modal').style.display='none'; setTimeout(()=>document.querySelector('#booking').scrollIntoView({behavior:'smooth'}), 60);">К форме</a>
+            </div>
+          </div>
+        `
+      });
+      return;
+    }
+
+    if(type==="release"){
+      const r = data.releases.find(x=>x.id===id);
+      openModal({
+        title: r.title,
+        sub: `${r.date} · ${r.format}`,
+        body: `
+          <div class="grid g2">
+            <div class="card">
+              <div class="media square"><img src="smile.png" alt="" /></div>
+              <div class="pad">
+                <b>Треклист</b>
+                <div class="divider"></div>
+                <div class="muted">${(r.tracklist||[]).map(t=>`• ${t}`).join("<br>")}</div>
+              </div>
+            </div>
+            <div class="card pad">
+              <b>Ссылки</b>
+              <div class="divider"></div>
+              <div class="row">
+                <button class="btn" type="button" onclick="alert('Bandcamp (поставишь ссылку)')">Bandcamp</button>
+                <button class="btn" type="button" onclick="alert('SoundCloud (поставишь ссылку)')">SoundCloud</button>
+              </div>
+              <div class="divider"></div>
+              <div class="muted">Кредиты: мастеринг / арт / лейбл (тест).</div>
+            </div>
+          </div>
+        `
+      });
+      return;
+    }
+
+    if(type==="podcast"){
+      const p = data.podcasts.find(x=>x.id===id);
+      openModal({
+        title: p.title,
+        sub: `${p.date}`,
+        body: `
+          <div class="grid g2">
+            <div class="card pad">
+              <b>Плеер</b>
+              <div class="divider"></div>
+              <div class="media wide"><img src="smile.png" alt="" /></div>
+              <div class="muted" style="margin-top:10px;">Здесь будет SoundCloud embed.</div>
+            </div>
+            <div class="card pad">
+              <b>Описание</b>
+              <div class="divider"></div>
+              <div class="muted">${p.note}</div>
+              <div class="divider"></div>
+              <b>Треклист</b>
+              <div class="muted" style="margin-top:8px;">Тест: • Track A • Track B • Track C</div>
+            </div>
+          </div>
+        `
+      });
+      return;
+    }
+
+    if(type==="stream"){
+      const s = data.streams.find(x=>x.id===id);
+      openModal({
+        title: s.title,
+        sub: `${s.date}`,
+        body: `
+          <div class="card pad">
+            <b>Воспроизведение</b>
+            <div class="divider"></div>
+            <div class="media wide"><img src="smile.png" alt="" /></div>
+            <div class="muted" style="margin-top:10px;">Тут будет YouTube/Vimeo embed.</div>
+          </div>
+        `
+      });
+      return;
+    }
+
+    if(type==="merch"){
+      const m = data.merch.find(x=>x.id===id);
+      openModal({
+        title: m.title,
+        sub: `${m.price} · ${m.status}`,
+        body: `
+          <div class="grid g2">
+            <div class="card">
+              <div class="media square"><img src="smile.png" alt="" /></div>
+              <div class="pad">
+                <b>Описание</b>
+                <div class="divider"></div>
+                <div class="muted">${m.desc}</div>
+              </div>
+            </div>
+            <div class="card pad">
+              <b>Оформление</b>
+              <div class="divider"></div>
+              <div class="muted">Пока предзаказ. Потом подключим оплату.</div>
+              <div style="height:12px"></div>
+              <button class="btn primary" type="button" onclick="alert('Тут будет форма/бот')">Предзаказ</button>
+            </div>
+          </div>
+        `
+      });
+      return;
+    }
+  });
+
+  // Booking generator
+  $("#genBooking").addEventListener("click", ()=>{
+    const txt =
+`Привет! Хочу запросить букинг.
+
+Дата: ${$("#bDate").value || "—"}
+Город: ${$("#bCity").value || "—"}
+Площадка: ${$("#bVenue").value || "—"}
+Формат: ${$("#bFormat").value || "—"}
+
+Контакт: ${$("#bContacts").value || "—"}
+
+Пришлите, пожалуйста, условия (гонорар, техрайдер, тайминг, сетап).`;
+    $("#bookingText").value = txt;
+  });
+
+  $("#copyBooking").addEventListener("click", async ()=>{
+    const val = $("#bookingText").value.trim();
+    if(!val){ alert("Сначала сгенерируй текст"); return; }
+    await navigator.clipboard.writeText(val);
+    alert("Скопировано");
+  });
+
+  // Nav active on scroll
+  const navLinks = $$(".nav a");
+  const sections = navLinks.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        navLinks.forEach(l=>l.classList.toggle("active", l.getAttribute("href") === `#${entry.target.id}`));
+      }
+    });
+  }, { rootMargin:"-50% 0px -45% 0px", threshold:0.01 });
+  sections.forEach(s=>io.observe(s));
+
+  // Init
+  $("#year").textContent = new Date().getFullYear();
+  renderEvents();
+  renderCal();
+  renderArtists();
+  renderReleases();
+  renderPodcasts();
+  renderStreams();
+  renderMerch();
+</script>
+
+
+</body></html>
