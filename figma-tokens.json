@@ -1,0 +1,28 @@
+{
+  "global": {
+    "color": {
+      "bg": { "value": "#000000", "type": "color" },
+      "fg": { "value": "#FFFFFF", "type": "color" },
+      "muted": { "value": "rgba(255,255,255,0.72)", "type": "color" },
+      "stroke": { "value": "rgba(255,255,255,0.14)", "type": "color" },
+      "stroke2": { "value": "rgba(255,255,255,0.10)", "type": "color" },
+      "card": { "value": "rgba(8,8,8,0.42)", "type": "color" }
+    },
+    "radius": {
+      "card": { "value": "18", "type": "borderRadius" },
+      "chip": { "value": "999", "type": "borderRadius" }
+    },
+    "size": {
+      "containerMax": { "value": "1180", "type": "sizing" },
+      "headerHeight": { "value": "78", "type": "sizing" },
+      "headerHeightMobile": { "value": "68", "type": "sizing" }
+    },
+    "spacing": {
+      "xs": { "value": "8", "type": "spacing" },
+      "sm": { "value": "12", "type": "spacing" },
+      "md": { "value": "16", "type": "spacing" },
+      "lg": { "value": "24", "type": "spacing" },
+      "xl": { "value": "56", "type": "spacing" }
+    }
+  }
+}

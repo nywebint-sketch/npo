@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "id": "npo",
+      "name": "NPO",
+      "aliases": ["npo", "нпо", "календарь", "лендинг"],
+      "default_block": "Обновление"
+    },
+    {
+      "id": "campaign_alpha",
+      "name": "Campaign Alpha",
+      "aliases": ["alpha", "кампания alpha", "реклама alpha", "бренд alpha"],
+      "default_block": "Статус"
+    },
+    {
+      "id": "internal_ops",
+      "name": "Internal Ops",
+      "aliases": ["операционка", "внутренний", "документы", "смета", "договор"],
+      "default_block": "Операционка"
+    }
+  ]
+}
