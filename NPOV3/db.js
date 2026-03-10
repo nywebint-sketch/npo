@@ -50,18 +50,18 @@ export const getSession = async () => {
 export const checkIsAdmin = async () => {
   const session = await getSession();
   if (!session) return false;
-  
+
   const { data, error } = await supabaseClt
     .from('profiles')
     .select('role')
     .eq('id', session.user.id)
     .single();
-    
+
   if (error) {
-     console.error("checkIsAdmin error:", error);
-     // ВРЕМЕННЫЙ ХАК: если это наш админ, пускаем даже если RLS блокирует
-     if (session.user.email === 'deliacorona@gmail.com') return true;
-     return false;
+    console.error("checkIsAdmin error:", error);
+    // ВРЕМЕННЫЙ ХАК: если это наш админ, пускаем даже если RLS блокирует
+    if (session.user.email === 'deliacorona@gmail.com') return true;
+    return false;
   }
   return data.role === 'admin';
 };
@@ -69,14 +69,13 @@ export const checkIsAdmin = async () => {
 
 // --- API Событий (Events) ---
 
-export const getEvents = async (from = 0, to = 19) => {
+export const getEvents = async () => {
   // сортируем по дате убывания как было раньше
   const { data, error } = await supabaseClt
     .from('events')
     .select('*')
-    .order('date', { ascending: false })
-    .range(from, to);
-    
+    .order('date', { ascending: false });
+
   if (error) {
     console.error('Error fetching events:', error);
     return [];
@@ -90,7 +89,7 @@ export const addEvent = async (eventData) => {
     .insert([eventData])
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 };
@@ -102,7 +101,7 @@ export const updateEvent = async (id, eventData) => {
     .eq('id', id)
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 };
@@ -112,27 +111,19 @@ export const deleteEvent = async (id) => {
     .from('events')
     .delete()
     .eq('id', id);
-    
+
   if (error) throw error;
   return true;
 };
 
 // --- API Артистов (Artists) ---
 
-export const getArtists = async (query = '', from = 0, to = 19) => {
-  let req = supabaseClt
+export const getArtists = async () => {
+  const { data, error } = await supabaseClt
     .from('artists')
     .select('*')
-    .order('sort_order', { ascending: true })
-    .order('name', { ascending: true })
-    .range(from, to);
+    .order('name', { ascending: true });
 
-  if (query) {
-    req = req.or(`name.ilike.%${query}%,role.ilike.%${query}%`);
-  }
-
-  const { data, error } = await req;
-    
   if (error) {
     console.error('Error fetching artists:', error);
     return [];
@@ -146,7 +137,7 @@ export const addArtist = async (artistData) => {
     .insert([artistData])
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 };
@@ -158,7 +149,7 @@ export const updateArtist = async (id, artistData) => {
     .eq('id', id)
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 };
@@ -168,7 +159,7 @@ export const deleteArtist = async (id) => {
     .from('artists')
     .delete()
     .eq('id', id);
-    
+
   if (error) throw error;
   return true;
 };
@@ -180,10 +171,10 @@ export const getUsers = async () => {
     .from('profiles')
     .select('*')
     .order('created_at', { ascending: false });
-    
+
   if (error) {
-     console.error('Error fetching profiles:', error);
-     return [];
+    console.error('Error fetching profiles:', error);
+    return [];
   }
   return data;
 };
@@ -195,19 +186,18 @@ export const updateUserRole = async (id, newRole) => {
     .eq('id', id)
     .select()
     .single();
-    
+
   if (error) throw error;
   return data;
 };
 
 // --- API Релизов (Releases) ---
 
-export const getReleases = async (from = 0, to = 19) => {
+export const getReleases = async () => {
   const { data, error } = await supabaseClt
     .from('releases')
     .select('*')
-    .order('date', { ascending: false })
-    .range(from, to);
+    .order('date', { ascending: false });
 
   if (error) {
     console.error('Error fetching releases:', error);
@@ -251,12 +241,11 @@ export const deleteRelease = async (id) => {
 
 // --- API Подкастов (Podcasts) ---
 
-export const getPodcasts = async (from = 0, to = 19) => {
+export const getPodcasts = async () => {
   const { data, error } = await supabaseClt
     .from('podcasts')
     .select('*')
-    .order('date', { ascending: false })
-    .range(from, to);
+    .order('date', { ascending: false });
 
   if (error) {
     console.error('Error fetching podcasts:', error);
@@ -300,12 +289,11 @@ export const deletePodcast = async (id) => {
 
 // --- API Стримов (Streams) ---
 
-export const getStreams = async (from = 0, to = 19) => {
+export const getStreams = async () => {
   const { data, error } = await supabaseClt
     .from('streams')
     .select('*')
-    .order('date', { ascending: false })
-    .range(from, to);
+    .order('date', { ascending: false });
 
   if (error) {
     console.error('Error fetching streams:', error);
@@ -349,12 +337,11 @@ export const deleteStream = async (id) => {
 
 // --- API Мерча (Merch) ---
 
-export const getMerch = async (from = 0, to = 19) => {
+export const getMerch = async () => {
   const { data, error } = await supabaseClt
     .from('merch')
     .select('*')
-    .order('title', { ascending: true })
-    .range(from, to);
+    .order('title', { ascending: true });
 
   if (error) {
     console.error('Error fetching merch:', error);
@@ -420,31 +407,31 @@ export const uploadImage = async (file) => {
 
 // Пустышка для обратной совместимости вызовов
 export const syncDefaultData = async () => {
-   // Больше не нужно копировать моки в localStorage
-   return true;
+  // Больше не нужно копировать моки в localStorage
+  return true;
 };
 
 // Делаем API доступным глобально, как и раньше
 window.dbLayer = {
-    getEvents,
-    addEvent,
-    updateEvent,
-    deleteEvent,
-    getArtists,
-    addArtist,
-    updateArtist,
-    deleteArtist,
-    getUsers,
-    updateUserRole,
-    syncDefaultData,
-    register,
-    login,
-    logout,
-    getSession,
-    checkIsAdmin,
-    uploadImage,
-    getReleases, addRelease, updateRelease, deleteRelease,
-    getPodcasts, addPodcast, updatePodcast, deletePodcast,
-    getStreams, addStream, updateStream, deleteStream,
-    getMerch, addMerch, updateMerch, deleteMerch
+  getEvents,
+  addEvent,
+  updateEvent,
+  deleteEvent,
+  getArtists,
+  addArtist,
+  updateArtist,
+  deleteArtist,
+  getUsers,
+  updateUserRole,
+  syncDefaultData,
+  register,
+  login,
+  logout,
+  getSession,
+  checkIsAdmin,
+  uploadImage,
+  getReleases, addRelease, updateRelease, deleteRelease,
+  getPodcasts, addPodcast, updatePodcast, deletePodcast,
+  getStreams, addStream, updateStream, deleteStream,
+  getMerch, addMerch, updateMerch, deleteMerch
 };

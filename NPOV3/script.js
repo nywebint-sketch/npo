@@ -169,9 +169,9 @@ async function refreshClubSession() {
 
     // Тут можно в будущем брать эксклюзивный контент из базы
     const mockExclusive = [
-       {title: 'Early Access: NPO VA 002', description: 'Превью треков + закрытый pre-save.'},
-       {title: 'Private Stream Archive', description: 'Закрытые записи из ночных сетов.'},
-       {title: 'Members Promo Code', description: 'Скидка 15% на мерч и закрытые дропы.'}
+      { title: 'Early Access: NPO VA 002', description: 'Превью треков + закрытый pre-save.' },
+      { title: 'Private Stream Archive', description: 'Закрытые записи из ночных сетов.' },
+      { title: 'Members Promo Code', description: 'Скидка 15% на мерч и закрытые дропы.' }
     ];
     renderExclusiveItems(mockExclusive);
     renderClubAccess();
@@ -218,11 +218,11 @@ function initClubAuth() {
       const session = await window.dbLayer.getSession();
       clubSession = { email: session.user.email, name: session.user.user_metadata?.name || name };
       form.reset();
-      
+
       const mockExclusive = [
-       {title: 'Early Access: NPO VA 002', description: 'Превью треков + закрытый pre-save.'},
-       {title: 'Private Stream Archive', description: 'Закрытые записи из ночных сетов.'},
-       {title: 'Members Promo Code', description: 'Скидка 15% на мерч и закрытые дропы.'}
+        { title: 'Early Access: NPO VA 002', description: 'Превью треков + закрытый pre-save.' },
+        { title: 'Private Stream Archive', description: 'Закрытые записи из ночных сетов.' },
+        { title: 'Members Promo Code', description: 'Скидка 15% на мерч и закрытые дропы.' }
       ];
       renderExclusiveItems(mockExclusive);
       renderClubAccess();
@@ -248,11 +248,11 @@ function initClubAuth() {
       const session = await window.dbLayer.getSession();
       clubSession = { email: session.user.email, name: session.user.user_metadata?.name || email };
       form.reset();
-      
+
       const mockExclusive = [
-       {title: 'Early Access: NPO VA 002', description: 'Превью треков + закрытый pre-save.'},
-       {title: 'Private Stream Archive', description: 'Закрытые записи из ночных сетов.'},
-       {title: 'Members Promo Code', description: 'Скидка 15% на мерч и закрытые дропы.'}
+        { title: 'Early Access: NPO VA 002', description: 'Превью треков + закрытый pre-save.' },
+        { title: 'Private Stream Archive', description: 'Закрытые записи из ночных сетов.' },
+        { title: 'Members Promo Code', description: 'Скидка 15% на мерч и закрытые дропы.' }
       ];
       renderExclusiveItems(mockExclusive);
       renderClubAccess();
@@ -332,12 +332,28 @@ function renderEvents() {
 }
 
 function renderArtists() {
+  const searchEl = $("#artistSearch");
+  const q = ((searchEl && searchEl.value) || "").trim().toLowerCase();
   const wrap = $("#artistsGrid");
   if (!wrap) return;
   wrap.replaceChildren();
 
-  // data.artists is already sorted and formatted by the backend
-  data.artists.forEach((artist) => {
+  let list = [...data.artists].sort((a, b) => {
+    if (a.name === "WEI" && b.name !== "WEI") return -1;
+    if (b.name === "WEI" && a.name !== "WEI") return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  if (q) {
+    list = list.filter((a) =>
+      a.name.toLowerCase().includes(q) ||
+      a.role.toLowerCase().includes(q) ||
+      (a.tags || []).join(" ").toLowerCase().includes(q)
+    );
+  }
+
+  const toShow = q ? list : list.slice(0, ARTISTS_VISIBLE);
+  toShow.forEach((artist) => {
     const card = el("div", { className: "card artist-card" });
     card.appendChild(createMedia(artist.poster || "smile.png", artist.name, "media square"));
 
@@ -491,6 +507,11 @@ function buildEventModalBody(eventItem) {
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     actions.appendChild(link);
+  } else {
+    const button = el("button", { className: "btn primary event-ticket-btn", text: "Билеты / регистрация" });
+    button.type = "button";
+    button.addEventListener("click", () => alert("Тут будет ссылка на билеты/регистрацию"));
+    actions.appendChild(button);
   }
 
   wrapper.appendChild(left);
@@ -507,30 +528,22 @@ function buildArtistModalBody(artist) {
   left.appendChild(createMedia(artist.poster || "smile.png", artist.name, mediaClass));
 
   const right = el("div", { className: "card pad event-modal-right" });
-  
+
   const bio = el("div", { className: "muted", text: artist.bio || "—" });
   right.appendChild(bio);
 
   const actions = el("div", { className: "event-modal-actions" });
   actions.style.gap = "10px";
 
-  const bandcampUrl = safeHttpUrl(artist.bandcamp_url);
-  if (bandcampUrl) {
-    const bandcamp = el("a", { className: "btn event-ticket-btn", text: "Bandcamp" });
-    bandcamp.href = bandcampUrl;
-    bandcamp.target = "_blank";
-    bandcamp.rel = "noopener noreferrer";
-    actions.appendChild(bandcamp);
-  }
+  const bandcamp = el("button", { className: "btn event-ticket-btn", text: "Bandcamp" });
+  bandcamp.type = "button";
+  bandcamp.addEventListener("click", () => alert("Bandcamp (поставишь ссылку)"));
+  actions.appendChild(bandcamp);
 
-  const soundcloudUrl = safeHttpUrl(artist.soundcloud_url);
-  if (soundcloudUrl) {
-    const soundcloud = el("a", { className: "btn event-ticket-btn", text: "SoundCloud" });
-    soundcloud.href = soundcloudUrl;
-    soundcloud.target = "_blank";
-    soundcloud.rel = "noopener noreferrer";
-    actions.appendChild(soundcloud);
-  }
+  const soundcloud = el("button", { className: "btn event-ticket-btn", text: "SoundCloud" });
+  soundcloud.type = "button";
+  soundcloud.addEventListener("click", () => alert("SoundCloud (поставишь ссылку)"));
+  actions.appendChild(soundcloud);
 
   wrapper.appendChild(left);
   wrapper.appendChild(right);
@@ -558,23 +571,15 @@ function buildReleaseModalBody(release) {
   const actions = el("div", { className: "event-modal-actions" });
   actions.style.gap = "10px";
 
-  const bandcampUrl = safeHttpUrl(release.bandcamp_url);
-  if (bandcampUrl) {
-    const bandcamp = el("a", { className: "btn event-ticket-btn", text: "Bandcamp" });
-    bandcamp.href = bandcampUrl;
-    bandcamp.target = "_blank";
-    bandcamp.rel = "noopener noreferrer";
-    actions.appendChild(bandcamp);
-  }
+  const bandcamp = el("button", { className: "btn event-ticket-btn", text: "Bandcamp" });
+  bandcamp.type = "button";
+  bandcamp.addEventListener("click", () => alert("Bandcamp (поставишь ссылку)"));
+  actions.appendChild(bandcamp);
 
-  const soundcloudUrl = safeHttpUrl(release.soundcloud_url);
-  if (soundcloudUrl) {
-    const soundcloud = el("a", { className: "btn event-ticket-btn", text: "SoundCloud" });
-    soundcloud.href = soundcloudUrl;
-    soundcloud.target = "_blank";
-    soundcloud.rel = "noopener noreferrer";
-    actions.appendChild(soundcloud);
-  }
+  const soundcloud = el("button", { className: "btn event-ticket-btn", text: "SoundCloud" });
+  soundcloud.type = "button";
+  soundcloud.addEventListener("click", () => alert("SoundCloud (поставишь ссылку)"));
+  actions.appendChild(soundcloud);
 
   wrapper.appendChild(left);
   wrapper.appendChild(right);
@@ -614,10 +619,9 @@ function buildMerchModalBody(item) {
   spacer.style.height = "12px";
   right.appendChild(spacer);
 
-  const button = el("a", { className: "btn primary", text: "Предзаказ" });
-  button.href = "https://t.me/npo_melody";
-  button.target = "_blank";
-  button.rel = "noopener noreferrer";
+  const button = el("button", { className: "btn primary", text: "Предзаказ" });
+  button.type = "button";
+  button.addEventListener("click", () => alert("Тут будет форма/бот"));
   right.appendChild(button);
 
   grid.appendChild(left);
@@ -878,63 +882,36 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-
-
-let _artistSearchTimeout = null;
-$("#artistSearch")?.addEventListener("input", (e) => {
-  if (_artistSearchTimeout) clearTimeout(_artistSearchTimeout);
-  _artistSearchTimeout = setTimeout(async () => {
-    const q = e.target.value.trim().toLowerCase();
-    data.artists = await window.dbLayer.getArtists(q, 0, 19);
-    renderArtists();
-  }, 400);
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("[data-placeholder-link]");
+  if (link) {
+    e.preventDefault();
+    alert(link.dataset.placeholderLink || "Поставь ссылку");
+  }
 });
 
-const showToast = (msg) => {
-  let toast = document.getElementById('global-toast');
-  if (!toast) {
-    toast = el('div', { id: 'global-toast', className: 'toast' });
-    document.body.appendChild(toast);
-  }
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 4000);
-};
+$("#artistSearch")?.addEventListener("input", () => renderArtists());
 
 const initApp = async () => {
-  try {
-    if (window.dbLayer) {
-      await window.dbLayer.syncDefaultData();
-      const [events, artists, releases, podcasts, streams, merch] = await Promise.all([
-        window.dbLayer.getEvents(),
-        window.dbLayer.getArtists(),
-        window.dbLayer.getReleases(),
-        window.dbLayer.getPodcasts(),
-        window.dbLayer.getStreams(),
-        window.dbLayer.getMerch()
-      ]);
-      data.events = events;
-      data.artists = artists;
-      data.releases = releases;
-      data.podcasts = podcasts;
-      data.streams = streams;
-      data.merch = merch;
-    }
-    
-    const yearNode = $("#year");
-    if (yearNode) yearNode.textContent = new Date().getFullYear();
-    
-    renderEvents();
-    renderArtists();
-    renderReleases();
-    renderStreams();
-    renderMerch();
-    initClubAuth();
-  } catch (err) {
-    console.error("Initialization error:", err);
-    showToast("Сервер недоступен. Проверьте подключение к сети.");
-    document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
+  if (window.dbLayer) {
+    await window.dbLayer.syncDefaultData();
+    data.events = await window.dbLayer.getEvents();
+    data.artists = await window.dbLayer.getArtists();
+    data.releases = await window.dbLayer.getReleases();
+    data.podcasts = await window.dbLayer.getPodcasts();
+    data.streams = await window.dbLayer.getStreams();
+    data.merch = await window.dbLayer.getMerch();
   }
+
+  const yearNode = $("#year");
+  if (yearNode) yearNode.textContent = new Date().getFullYear();
+
+  renderEvents();
+  renderArtists();
+  renderReleases();
+  renderStreams();
+  renderMerch();
+  initClubAuth();
 };
 
 document.addEventListener("DOMContentLoaded", initApp);

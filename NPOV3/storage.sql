@@ -3,17 +3,9 @@
 
 -- 1. Выдаем права на загрузку картинок аутентифицированным пользователям
 -- Создаем корзину (Bucket) "images", если она еще не создана
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) 
-values (
-  'images', 
-  'images', 
-  true, 
-  5242880, -- 5 MB limit
-  array['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']
-)
-on conflict (id) do update set 
-  file_size_limit = 5242880,
-  allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
+insert into storage.buckets (id, name, public) 
+values ('images', 'images', true)
+on conflict (id) do nothing;
 
 -- 2. Политики (RLS) для таблицы storage.objects (сами файлы)
 -- Удаляем старые, если вдруг есть, чтобы не было конфликта

@@ -153,21 +153,25 @@
     .brand-mark {
       width: 48px;
       height: 48px;
-      border-radius: 13px;
-      border: none;
-      background: transparent;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--button-bg);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 7px;
       overflow: hidden;
-      transition: background .25s ease, color .25s ease;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
     }
 
     .brand-mark:hover,
     .brand-mark:active {
+      transform: translateY(-1px);
       background: var(--surface-hover);
       color: var(--text-hover);
+      border-color: var(--border-hover);
     }
 
     .brand-mark img {
