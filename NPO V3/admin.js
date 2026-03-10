@@ -10,6 +10,11 @@ const logoutBtn = document.getElementById('adminLogoutBtn');
 const currentUserEmail = document.getElementById('adminCurrentEmail');
 
 async function checkAuth() {
+  // Если разметка админки не нашлась (например, скрипт подключён не на той странице) — просто выходим
+  if (!loginScreen || !adminPanel || !currentUserEmail) {
+    return;
+  }
+
   try {
     const session = await db.getSession();
     if (session) {
@@ -21,8 +26,10 @@ async function checkAuth() {
         loadDashboard();
       } else {
         await db.logout();
-        loginError.textContent = 'У вас нет прав администратора';
-        loginError.style.display = 'block';
+        if (loginError) {
+          loginError.textContent = 'У вас нет прав администратора';
+          loginError.style.display = 'block';
+        }
         loginScreen.classList.remove('hidden');
         adminPanel.style.display = 'none';
       }
