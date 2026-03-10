@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Init Admin</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>body { background: #111; color: #fff; font-family: monospace; padding: 2rem; }</style>
+</head>
+<body>
+  <h2>Создание Администратора...</h2>
+  <div id="log"></div>
+
+  <script>
+    const supUrl = 'https://rvswpgsxutfcpgvmzonr.supabase.co';
+    const supKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2c3dwZ3N4dXRmY3Bndm16b25yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzA4NDUxMSwiZXhwIjoyMDg4NjYwNTExfQ.vxZtV2j3_5O0qFZjIWeMgUARUhkxFO8vyKMLYhb-GmY';
+    
+    const client = window.supabase.createClient(supUrl, supKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+    });
+
+    const email = 'deliacorona@gmail.com';
+    const pass = 'admin123';
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+        console.log(msg);
+        logEl.innerHTML += `<p>${msg}</p>`;
+    }
+
+    async function run() {
+        log('1. Пробуем создать пользователя...');
+        const { data: user, error: createError } = await client.auth.admin.createUser({
+            email: email,
+            password: pass,
+            email_confirm: true,
+            user_metadata: { name: 'Admin NPO' }
+        });
+
+        let targetUserId = null;
+
+        if (createError) {
+             if (createError.message.includes('already exists') || createError.message.includes('already registered')) {
+                log('Пользователь уже существует! Ищем его ID...');
+                const { data: usersData } = await client.auth.admin.listUsers();
+                const existingUser = usersData?.users?.find(u => u.email === email);
+                
+                if (existingUser) {
+                    targetUserId = existingUser.id;
+                    log('Найден ID: ' + targetUserId);
+                    log('Принудительно подтверждаем email...');
+                    await client.auth.admin.updateUserById(targetUserId, { email_confirm: true });
+                } else {
+                    log('❌ Не удалось найти пользователя D:');
+                    return;
+                }
+             } else {
+                log('❌ Ошибка создания: ' + JSON.stringify(createError));
+                return;
+             }
+        } else {
+            targetUserId = user.user.id;
+            log('✅ Пользователь успешно создан и подтвержден!');
+        }
+
+        log('2. Пробуем выдать права администратора (SQL update-подобный запрос)...');
+        
+        await new Promise(r => setTimeout(r, 1000)); // Ждем триггер
+        
+        const { error: roleError } = await client.from('profiles').update({ role: 'admin' }).eq('id', targetUserId);
+        
+        if (roleError) {
+            log('❌ Ошибка выдачи прав: ' + JSON.stringify(roleError));
+        } else {
+            log('✅ РОЛЬ АДМИНИСТРАТОРА УСПЕШНО ВЫДАНА!');
+            log('======================');
+            log('Теперь вы можете зайти в админку с паролем: ' + pass);
+            log('(или с тем паролем, который вы придумали, если аккаунт уже был создан ранее)');
+        }
+    }
+
+    run();
+  </script>
+</body>
+</html>
