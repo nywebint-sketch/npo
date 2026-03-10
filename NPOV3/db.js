@@ -7,7 +7,7 @@
 // window.supabase - это глобальный объект клиента
 
 const SUPABASE_URL = 'https://rvswpgsxutfcpgvmzonr.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_lW73N7V05vOTquEuPSudHQ_9qv9IjOE';
+const SUPABASE_ANON_KEY = 'SUPABASE_ANON_KEY_PLACEHOLDER';
 
 // Инициализация Supabase клиента (объект supabaseClt)
 export const supabaseClt = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
