@@ -180,9 +180,11 @@ const editorTitle = document.getElementById('editorTitle');
 const editorBody = document.getElementById('editorBody');
 const editorClose = document.getElementById('editorClose');
 
-editorClose.addEventListener('click', () => {
-  adminModal.style.display = 'none';
-});
+if (editorClose && adminModal) {
+  editorClose.addEventListener('click', () => {
+    adminModal.style.display = 'none';
+  });
+}
 
 async function loadEventsView() {
   addBtn.style.display = 'block';
