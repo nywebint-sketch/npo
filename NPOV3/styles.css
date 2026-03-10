@@ -180,14 +180,12 @@
       object-fit: contain;
       display: block;
       filter: invert(0);
-      mix-blend-mode: multiply;
       transition: filter .25s ease;
     }
 
     .brand-mark:hover img,
     .brand-mark:active img {
       filter: invert(1);
-      mix-blend-mode: screen;
     }
 
     .menu-toggle {
@@ -1824,12 +1822,10 @@
       
       .brand-mark img {
         filter: invert(1);
-        mix-blend-mode: screen;
       }
       .brand-mark:hover img,
       .brand-mark:active img {
         filter: invert(0);
-        mix-blend-mode: multiply;
       }
 
       .intro-start {
