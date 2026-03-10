@@ -47,10 +47,10 @@ loginForm.addEventListener('submit', async (e) => {
   
   try {
     const res = await db.login(email, pass);
-    if(res) {
-       await checkAuth();
+    if (res) {
+      await checkAuth();
     }
-  } catch(err) {
+  } catch (err) {
     loginError.textContent = 'Неверный логин или пароль';
     loginError.style.display = 'block';
   }
@@ -129,10 +129,14 @@ async function loadUsersView() {
     const email = u.email || '—';
     const name = u.name || '—';
     const role = u.role || 'member';
-    const createdRaw = (u.created_at || u.createdAt || '');
-    const created = (typeof createdRaw === 'string' && createdRaw.includes('T'))
-      ? createdRaw.split('T')[0]
-      : (createdRaw || '—');
+
+    // created_at может быть undefined/Date/строка — аккуратно приводим
+    const createdSource = (u.created_at !== undefined ? u.created_at : u.createdAt);
+    let created = '—';
+    if (createdSource) {
+      const s = String(createdSource);
+      created = s.length >= 10 ? s.slice(0, 10) : s;
+    }
 
     return `
     <tr>
@@ -158,6 +162,15 @@ async function loadUsersView() {
     </div>
   `;
 }
+
+window.app = {
+  makeAdmin: async (id) => {
+    if (confirm('Сделать пользователя администратором?')) {
+      await db.updateUserRole(id, 'admin');
+      loadUsersView();
+    }
+  }
+};
 
 // ---- СОБЫТИЯ (АФИША) ----
 async function loadEventsView() {
@@ -300,14 +313,14 @@ async function openEventEditor(id = null) {
     const file = fd.get('posterFile');
     let posterUrl = event.poster || 'smile.png';
     if (file && file.size > 0) {
-       try {
-         posterUrl = await db.uploadImage(file);
-       } catch (err) {
-         alert('Ошибка при загрузке картинки!');
-         btn.textContent = 'Сохранить';
-         btn.disabled = false;
-         return;
-       }
+      try {
+        posterUrl = await db.uploadImage(file);
+      } catch (err) {
+        alert('Ошибка при загрузке картинки!');
+        btn.textContent = 'Сохранить';
+        btn.disabled = false;
+        return;
+      }
     }
 
     const data = {
@@ -333,7 +346,7 @@ async function openEventEditor(id = null) {
 
 window.app.editEvent = openEventEditor;
 window.app.deleteEvent = async (id) => {
-  if(confirm('Точно удалить событие?')) {
+  if (confirm('Точно удалить событие?')) {
     await db.deleteEvent(id);
     loadEventsView();
   }
@@ -363,233 +376,4 @@ async function openArtistEditor(id = null) {
         <input type="text" name="role" value="${artist.role || ''}">
       </div>
       <div class="form-group">
-        <label>Описание (Bio)</label>
-        <textarea name="bio">${artist.bio || ''}</textarea>
-      </div>
-      <div class="form-group">
-        <label>Доступен для букинга</label>
-        <select name="bookable">
-          <option value="true" ${artist.bookable?'selected':''}>Да</option>
-          <option value="false" ${!artist.bookable?'selected':''}>Нет</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Обложка / Фото</label>
-        <div style="display:flex; gap: 10px; align-items:center; margin-bottom: 8px;">
-           ${artist.poster && !artist.poster.startsWith('smile') ? `<img src="${artist.poster}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover;">` : `<div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div>`}
-           <input type="file" name="posterFile" accept="image/*" style="font-size: 14px;">
-        </div>
-        <div class="muted" style="font-size: 12px;">Оставьте пустым, чтобы не менять текущую картинку.</div>
-      </div>
-      
-      <div class="editor-actions">
-        <button type="button" class="btn ghost" onclick="document.getElementById('adminModal').style.display='none'">Отмена</button>
-        <button type="submit" class="btn primary" id="saveArtistBtn">Сохранить</button>
-      </div>
-    </form>
-  `;
-
-  adminModal.style.display = 'flex';
-
-  document.getElementById('editorForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('saveArtistBtn');
-    btn.textContent = 'Сохранение...';
-    btn.disabled = true;
-
-    const fd = new FormData(e.target);
-
-    // Загружаем картинку
-    const file = fd.get('posterFile');
-    let posterUrl = artist.poster || 'smile.png';
-    if (file && file.size > 0) {
-       try {
-         posterUrl = await db.uploadImage(file);
-       } catch (err) {
-         alert('Ошибка при загрузке картинки!');
-         btn.textContent = 'Сохранить';
-         btn.disabled = false;
-         return;
-       }
-    }
-
-    const data = {
-      name: fd.get('name'),
-      role: fd.get('role'),
-      bio: fd.get('bio'),
-      bookable: fd.get('bookable') === 'true',
-      tags: artist.tags,
-      poster: posterUrl
-    };
-
-    if (isEdit) {
-      await db.updateArtist(id, data);
-    } else {
-      await db.addArtist(data);
-    }
-    
-    adminModal.style.display = 'none';
-    loadArtistsView();
-  });
-}
-
-window.app.editArtist = openArtistEditor;
-window.app.deleteArtist = async (id) => {
-  if(confirm('Точно удалить артиста?')) {
-    await db.deleteArtist(id);
-    loadArtistsView();
-  }
-};
-
-// --- NEW VIEWS FOR PHASE 2 ---
-
-// ---- РЕЛИЗЫ (RELEASES) ----
-async function loadReleasesView() {
-  addBtn.style.display = 'block';
-  addBtn.onclick = () => alert("Открытие редактора релизов (в разработке)");
-
-  const releases = await db.getReleases();
-
-  const rows = releases.map(r => `
-    <tr>
-      <td>${r.title}</td>
-      <td>${r.date}</td>
-      <td>${r.format}</td>
-      <td>
-        <div class="actions">
-          <button class="btn-sm" onclick="alert('Редактор релиза')">Ред.</button>
-          <button class="btn-sm" style="color:red; background:rgba(255,0,0,0.1)" onclick="deleteReleaseHandler('${r.id}')">Удалить</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  viewContainer.innerHTML = `
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>Название</th><th>Дата</th><th>Формат</th><th>Действия</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
-}
-window.deleteReleaseHandler = async (id) => {
-  if (confirm('Точно удалить релиз?')) {
-    await db.deleteRelease(id);
-    loadReleasesView();
-  }
-};
-
-// ---- ПОДКАСТЫ (PODCASTS) ----
-async function loadPodcastsView() {
-  addBtn.style.display = 'block';
-  addBtn.onclick = () => alert("Открытие редактора подкастов (в разработке)");
-
-  const podcasts = await db.getPodcasts();
-
-  const rows = podcasts.map(r => `
-    <tr>
-      <td>${r.title}</td>
-      <td>${r.date}</td>
-      <td>
-        <div class="actions">
-          <button class="btn-sm" onclick="alert('Редактор подкаста')">Ред.</button>
-          <button class="btn-sm" style="color:red; background:rgba(255,0,0,0.1)" onclick="deletePodcastHandler('${r.id}')">Удалить</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  viewContainer.innerHTML = `
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>Название</th><th>Дата</th><th>Действия</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
-}
-window.deletePodcastHandler = async (id) => {
-  if (confirm('Удалить подкаст?')) {
-    await db.deletePodcast(id);
-    loadPodcastsView();
-  }
-};
-
-// ---- СТРИМЫ (STREAMS) ----
-async function loadStreamsView() {
-  addBtn.style.display = 'block';
-  addBtn.onclick = () => alert("Открытие редактора стримов (в разработке)");
-
-  const streams = await db.getStreams();
-
-  const rows = streams.map(r => `
-    <tr>
-      <td>${r.title}</td>
-      <td>${r.date}</td>
-      <td>
-        <div class="actions">
-          <button class="btn-sm" onclick="alert('Редактор стрима')">Ред.</button>
-          <button class="btn-sm" style="color:red; background:rgba(255,0,0,0.1)" onclick="deleteStreamHandler('${r.id}')">Удалить</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  viewContainer.innerHTML = `
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>Название</th><th>Дата</th><th>Действия</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
-}
-window.deleteStreamHandler = async (id) => {
-  if (confirm('Удалить запись трансляции?')) {
-    await db.deleteStream(id);
-    loadStreamsView();
-  }
-};
-
-// ---- МЕРЧ (MERCH) ----
-async function loadMerchView() {
-  addBtn.style.display = 'block';
-  addBtn.onclick = () => alert("Открытие редактора мерча (в разработке)");
-
-  const merch = await db.getMerch();
-
-  const rows = merch.map(r => `
-    <tr>
-      <td>${r.title}</td>
-      <td>${r.price}</td>
-      <td>${r.status}</td>
-      <td>
-        <div class="actions">
-          <button class="btn-sm" onclick="alert('Редактор товара')">Ред.</button>
-          <button class="btn-sm" style="color:red; background:rgba(255,0,0,0.1)" onclick="deleteMerchHandler('${r.id}')">Удалить</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  viewContainer.innerHTML = `
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>Название товара</th><th>Цена</th><th>Статус</th><th>Действия</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
-}
-window.deleteMerchHandler = async (id) => {
-  if (confirm('Точно удалить этот товар?')) {
-    await db.deleteMerch(id);
-    loadMerchView();
-  }
-};
-
-
-// ---- ИНИЦИАЛИЗАЦИЯ ----
-checkAuth();
-
+        <label>Описание (
