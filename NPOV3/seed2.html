@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Seed Supabase Phase 2</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Миграция данных: Релизы, Подкасты, Стримы, Мерч</h1>
+  <p>Пожалуйста, подождите...</p>
+  <pre id="log"></pre>
+
+  <script>
+    // ВНИМАНИЕ: Используем service_role ключ, чтобы писать напрямую
+    const supUrl = 'https://rvswpgsxutfcpgvmzonr.supabase.co';
+    const supKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2c3dwZ3N4dXRmY3Bndm16b25yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzA4NDUxMSwiZXhwIjoyMDg4NjYwNTExfQ.vxZtV2j3_5O0qFZjIWeMgUARUhkxFO8vyKMLYhb-GmY';
+    const client = window.supabase.createClient(supUrl, supKey, { auth: { autoRefreshToken: false, persistSession: false } });
+
+    const data = {
+      releases: [
+        { title: "NPO VA 001", date: "2026-02-28", format: "digital", tracklist: ["Track 1", "Track 2", "Track 3"] },
+        { title: "KIRA - Night Tools EP", date: "2026-03-15", format: "vinyl", tracklist: ["A1", "A2", "B1", "B2"] },
+        { title: "NPO LIVE - Session Cuts", date: "2026-03-22", format: "digital", tracklist: ["Cut 1", "Cut 2"] }
+      ],
+      podcasts: [
+        { title: "NPO Podcast 01: GUEST A", date: "2026-02-18", note: "Разговор + сет." },
+        { title: "NPO Podcast 02: KIRA", date: "2026-03-05", note: "Сет + треклист." }
+      ],
+      streams: [
+        { title: "Replay: Warehouse Night", date: "2026-02-10" },
+        { title: "Replay: Guest Session", date: "2026-02-03" },
+        { title: "Replay: Community Night", date: "2026-01-27" }
+      ],
+      merch: [
+        { title: "T-shirt NPO", price: "3500 ₽", status: "preorder", desc: "Плотный хлопок, белый принт." },
+        { title: "Cap NPO", price: "1900 ₽", status: "in_stock", desc: "Вышивка." },
+        { title: "Sticker pack", price: "450 ₽", status: "in_stock", desc: "Набор наклеек." },
+        { title: "Totebag", price: "2400 ₽", status: "preorder", desc: "Хлопок, трафарет." }
+      ]
+    };
+
+    function log(msg) {
+      document.getElementById('log').textContent += msg + '\n';
+      console.log(msg);
+    }
+
+    async function runSeed() {
+      try {
+        log('Очистка старых данных перед посевом...');
+        await client.from('releases').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await client.from('podcasts').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await client.from('streams').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await client.from('merch').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+        log('Загрузка релизов...');
+        const r1 = await client.from('releases').insert(data.releases);
+        if (r1.error) throw r1.error;
+
+        log('Загрузка подкастов...');
+        const r2 = await client.from('podcasts').insert(data.podcasts);
+        if (r2.error) throw r2.error;
+
+        log('Загрузка стримов...');
+        const r3 = await client.from('streams').insert(data.streams);
+        if (r3.error) throw r3.error;
+
+        log('Загрузка мерча...');
+        const r4 = await client.from('merch').insert(data.merch);
+        if (r4.error) throw r4.error;
+
+        log('ПОЛНОСТЬЮ ГОТОВО ✅');
+        log('Теперь можно зайти в админку и проверить новые вкладки!');
+      } catch (err) {
+        log('ОШИБКА: ' + err.message);
+      }
+    }
+
+    runSeed();
+  </script>
+</body>
+</html>

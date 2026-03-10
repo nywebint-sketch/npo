@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Restore Data</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>body { background: #111; color: #fff; font-family: monospace; padding: 2rem; }</style>
+</head>
+<body>
+  <h2>Восстановление Контента...</h2>
+  <div id="log"></div>
+
+  <script>
+    const supUrl = 'https://rvswpgsxutfcpgvmzonr.supabase.co';
+    const supKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2c3dwZ3N4dXRmY3Bndm16b25yIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzA4NDUxMSwiZXhwIjoyMDg4NjYwNTExfQ.vxZtV2j3_5O0qFZjIWeMgUARUhkxFO8vyKMLYhb-GmY';
+    
+    const client = window.supabase.createClient(supUrl, supKey, {
+        auth: { autoRefreshToken: false, persistSession: false }
+    });
+
+    const data = {
+      events: [
+        { title: "Maslaynitsa", date: "2026-02-19T22:00:00", place: "НПО Мелодия", tags: ["live", "electronic"], status: "archive", poster: "event-maslaynitsa.jpg", about: "Ивент Maslaynitsa.", lineup: ["am1d", "di-au", "feel gainsbourg", "egor popov", "nyaono"] },
+        { title: "Cliche", date: "2026-02-20T22:00:00", place: "НПО Мелодия", tags: ["club", "b2b"], status: "archive", poster: "event-cliche.jpg", about: "Ночной ивент Cliche.", lineup: ["ayokiddy", "fckshizy", "luxxomea", "manyice", "norman b2b void", "whysobored", "yardyard"] },
+        { title: "Pirate Jet", date: "2026-02-28T20:00:00", place: "НПО Мелодия", tags: ["live", "concert"], status: "archive", poster: "event-pirate-jet.jpg", about: "Pirate Jet: концерты и live performance.", lineup: ["gummies (concert)", "черные бояре x света ефремова (live performance)", "m1lbeee (concert)", "ucuda (concert)", "фантом м-100 (live)", "valentin fufaev", "dj baby steps", "yze (concert)", "bogdamn"] },
+        { title: "7+8", date: "2026-03-07T21:00:00", place: "НПО Мелодия", address: "Москва, 3-я улица Ямского Поля, 2 к5", tags: ["weekend", "live", "32h"], status: "tickets", poster: "event-7-marta.png", ticket_url: "https://moscow.qtickets.events/219423-78", about: "Первый викенд весны — 32 часа. Концерты Макса Беженова и BOORLUCK: GALLEON-25. Abelle, Utah, RHa & Roma Ptashenko, Сaspian Kid, Wei. Утренние: Denis Kostitsyn & Rvbbt & Ballu, Sereja Borisov. Перфоманс: Таи & Tomashino (Лаборатория Речи), Mishinuki Waterwitch & Soundxo, Лиза Голицына, Муся Кроткова. В ночи: Сurrent Сall, Marina Bibik, Mari Ka, Nastya Tkacheva. Билет не является гарантией входа, на мероприятии действует face control.", lineup: ["Макс Беженов", "BOORLUCK: GALLEON-25", "Abelle", "Utah", "RHa & Roma Ptashenko", "Сaspian Kid", "Wei", "Denis Kostitsyn & Rvbbt & Ballu", "Sereja Borisov", "Таи & Tomashino", "Mishinuki Waterwitch & Soundxo", "Лиза Голицына", "Муся Кроткова", "Сurrent Сall", "Marina Bibik", "Mari Ka", "Nastya Tkacheva"] },
+        { title: "7+8 (день 2)", date: "2026-03-09T17:00:00", place: "НПО Мелодия", address: "Москва, 3-я улица Ямского Поля, 2 к5", tags: ["weekend", "8march"], status: "tickets", poster: "event-8-marta.jpg", ticket_url: "https://moscow.qtickets.events/219423-78", about: "Продолжение 7+8. Восьмое марта — полный вайб. Единый билет на оба дня.", lineup: [] },
+        { title: "exponere", date: "2026-03-13T20:00:00", place: "НПО Мелодия", address: "Москва, 3-я улица Ямского Поля, 2 к5", tags: ["live", "tape"], status: "tickets", poster: "event-exponere.png", ticket_url: "https://moscow.qtickets.events/220843-exponere", about: "Март 13 w/ Exponere. Презентация кассеты Varia Pars Prima. Лайвы: Walter Shandy, Ivan Yerofeyev (ГОСТ ЗВУК, Resonance), Paita (DJ HeadSick, Yuzhnii Chelovek), Naked Drums. Диджей-сеты: Sablemik b2b OL, Oid b2b Sapurra, Wei b2b Beennooutside. Открытие: DJ Reelswatcher. Прайм: Skunk York. Утренние: Andrey Ramonov и RHa. Билет не является гарантией входа, на мероприятии действует FC.", lineup: ["DJ Reelswatcher", "Naūma (live)", "Ivan Yerofeyev (live)", "Sablemik x OL", "Wei x Beennooutside", "Walter Shandy (live)", "Skunk York", "Oid x Sapurra", "Naked Drums (live)", "Andrey Ramonov", "RHa"] }
+      ],
+      artists: [
+        { name: "AND", role: "Live act", bookable: true, tags: ["live", "hardware"], bio: "Живой сет с железом.", poster: "smile.png" },
+        { name: "WEI", role: "DJ / live", bookable: true, tags: ["live", "octatrack"], bio: "WEI", poster: "wei.jpg" },
+        { name: "ZED", role: "DJ / guest", bookable: true, tags: ["industrial", "fast"], bio: "Индастриал/фаст.", poster: "smile.png" },
+        { name: "LATY", poster: "laty.jpg", role: "Selector", bookable: true, tags: ["breaks", "leftfield"], bio: "Лефтфилд селекция." },
+        { name: "RHA", role: "Podcast host", bookable: true, tags: ["talk", "curation"], bio: "Ведущий подкаста.", poster: "smile.png" }
+      ]
+    };
+
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+        console.log(msg);
+        logEl.innerHTML += `<p>${msg}</p>`;
+    }
+
+    async function run() {
+        log('Очистка старых данных (если были)...');
+        await client.from('events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        await client.from('artists').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        log('Вставка событий...');
+        const { error: err1 } = await client.from('events').insert(data.events);
+        if (err1) log('❌ Ошибка ' + err1.message);
+        else log('✅ Афиша восстановлена.');
+
+        log('Вставка артистов...');
+        const { error: err2 } = await client.from('artists').insert(data.artists);
+        if (err2) log('❌ Ошибка ' + err2.message);
+        else log('✅ Артисты восстановлены.');
+        
+        log('<b>ГОТОВО! Можете возвращаться на вкладки сайта и обновлять страницу.</b>');
+        
+        // Удалим лишнее старое тестовое событие "Maslaynitsa", если оно задублировалось SQL скриптом
+        // delete() by title isn't perfectly safe, but works here
+    }
+
+    run();
+  </script>
+</body>
+</html>
