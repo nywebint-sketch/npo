@@ -130,7 +130,7 @@ async function loadUsersView() {
     const name = u.name || '—';
     const role = u.role || 'member';
     const createdRaw = (u.created_at || u.createdAt || '');
-    const created = typeof createdRaw === 'string' && createdRaw.includes('T')
+    const created = (typeof createdRaw === 'string' && createdRaw.includes('T'))
       ? createdRaw.split('T')[0]
       : (createdRaw || '—');
 
@@ -158,15 +158,6 @@ async function loadUsersView() {
     </div>
   `;
 }
-
-window.app = {
-  makeAdmin: async (id) => {
-    if(confirm('Сделать пользователя администратором?')) {
-      await db.updateUserRole(id, 'admin');
-      loadUsersView();
-    }
-  }
-};
 
 // ---- СОБЫТИЯ (АФИША) ----
 async function loadEventsView() {
