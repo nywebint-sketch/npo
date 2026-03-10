@@ -755,7 +755,7 @@
     }
 
     .intro-start {
-      padding: 0;
+      padding: 0 0 12vh 0; /* Pushes the vertically centered image slightly higher */
       min-height: calc(100vh - 78px);
       display: flex;
       align-items: center;
