@@ -7,13 +7,7 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const pad2 = (n) => String(n).padStart(2, "0");
 
 // Определяем префикс для ассетов (на GitHub Pages index.html лежит в корне, а картинки — в "NPO V3/")
-const ASSET_PREFIX = (() => {
-  const path = window.location.pathname || "";
-  // если страница уже внутри папки NPO V3 (локально или при прямом открытии), префикс не нужен
-  if (path.includes("/NPO%20V3/") || path.includes("/NPO V3/")) return "";
-  // корневой index.html GitHub Pages -> все ассеты лежат в подпапке
-  return "NPO V3/";
-})();
+const ASSET_PREFIX = "";
 
 const monthsRu = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
 const fmtDT = (iso) => {
